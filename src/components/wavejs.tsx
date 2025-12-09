@@ -1,60 +1,27 @@
 "use client";
 
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  ReactEventHandler,
+} from "react";
 import WaveSurfer from "wavesurfer.js";
 import RegionsPlugin, {
   Region,
 } from "wavesurfer.js/dist/plugins/regions.esm.js";
 import { Upload, Play, Pause, Download, Music } from "lucide-react";
+import useStateData from "@/hooks/useStateData";
+import { encodeWAV } from "@/utils/encodeWave";
 
-// --- Utility: Simple WAV Encoder (Browser Native) ---
-// typed explicitly for Float32Array (audio data) and number
-const encodeWAV = (samples: Float32Array, sampleRate: number): DataView => {
-  const buffer = new ArrayBuffer(44 + samples.length * 2);
-  const view = new DataView(buffer);
-
-  const writeString = (view: DataView, offset: number, string: string) => {
-    for (let i = 0; i < string.length; i++) {
-      view.setUint8(offset + i, string.charCodeAt(i));
-    }
-  };
-
-  writeString(view, 0, "RIFF");
-  view.setUint32(4, 36 + samples.length * 2, true);
-  writeString(view, 8, "WAVE");
-  writeString(view, 12, "fmt ");
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);
-  view.setUint16(22, 1, true);
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
-  writeString(view, 36, "data");
-  view.setUint32(40, samples.length * 2, true);
-
-  const floatTo16BitPCM = (
-    output: DataView,
-    offset: number,
-    input: Float32Array
-  ) => {
-    for (let i = 0; i < input.length; i++, offset += 2) {
-      const s = Math.max(-1, Math.min(1, input[i]));
-      output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
-    }
-  };
-
-  floatTo16BitPCM(view, 44, samples);
-  return view;
-};
-
-// --- Main Component ---
 const CuteRingtoneMaker: React.FC = () => {
-  // Strongly typed refs
+  // refs
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const regionsRef = useRef<RegionsPlugin | null>(null);
 
+  // States
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileLoaded, setFileLoaded] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
@@ -127,6 +94,8 @@ const CuteRingtoneMaker: React.FC = () => {
       setFileName(file.name);
       setFileLoaded(true);
       const url = URL.createObjectURL(file);
+      console.log(url);
+
       if (wavesurferRef.current) {
         wavesurferRef.current.load(url);
       }

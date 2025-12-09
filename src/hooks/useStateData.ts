@@ -3,7 +3,7 @@
 import { StateContext } from "@/utils/stateContext";
 import { useContext } from "react";
 
-export default function useStateDate() {
+export default function useStateData() {
   const context = useContext(StateContext);
 
   if (!context) {

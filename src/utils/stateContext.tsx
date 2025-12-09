@@ -16,7 +16,7 @@ const StateProvider: React.FC<{ children: React.ReactNode }> = ({
   const [data, setData] = useState<TikTokPost | null>(null);
 
   const handleSetData = useCallback((value: TikTokPost | null) => {
-    setData(data);
+    setData(value);
   }, []);
 
   const contextValue = useMemo(

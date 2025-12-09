@@ -1,11 +1,17 @@
 "use client";
+import useStateData from "@/hooks/useStateData";
 import { TikTokPost } from "@/lib/types";
 import { formAction } from "@/utils/form-action";
+import { StateContext } from "@/utils/stateContext";
 import { ArrowDownToLine } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { FormEvent, useContext, useEffect, useState } from "react";
 
 export default function Form() {
   const [url, setUrl] = useState<string>("");
+
+  const context = useContext(StateContext);
+
+  const { handleSetData } = useStateData();
 
   async function handleForm(ev: FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -13,7 +19,7 @@ export default function Form() {
     if (!url && !url.includes("tiktok.com")) return;
 
     const data: TikTokPost = await formAction(url);
-    console.log(data.result);
+    handleSetData(data);
   }
 
   return (
