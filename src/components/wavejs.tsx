@@ -30,6 +30,8 @@ const CuteRingtoneMaker: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [duration, setDuration] = useState<number>(0);
 
+  const { data } = useStateData();
+
   // Initialize Wavesurfer
   useEffect(() => {
     if (waveformRef.current && !wavesurferRef.current) {
@@ -88,7 +90,7 @@ const CuteRingtoneMaker: React.FC = () => {
     };
   }, []);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  /*   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setFileName(file.name);
@@ -100,7 +102,18 @@ const CuteRingtoneMaker: React.FC = () => {
         wavesurferRef.current.load(url);
       }
     }
-  };
+  }; */
+
+  useEffect(() => {
+    if (data) {
+      setFileName(data.data.result.author.username);
+      setFileLoaded(true);
+
+      if (wavesurferRef.current) {
+        wavesurferRef.current.load(data.data.result.music.playUrl[0]);
+      }
+    }
+  }, [data]);
 
   const handlePlayPause = () => {
     if (wavesurferRef.current) {
@@ -186,7 +199,7 @@ const CuteRingtoneMaker: React.FC = () => {
 
         <div className="p-8 space-y-8">
           {/* Step 1: Upload */}
-          {!fileLoaded && (
+          {/*           {!fileLoaded && (
             <div className="border-4 border-dashed border-pink-200 rounded-3xl p-10 flex flex-col items-center justify-center bg-pink-50/50 hover:bg-pink-100/50 transition-colors cursor-pointer relative">
               <input
                 type="file"
@@ -202,7 +215,7 @@ const CuteRingtoneMaker: React.FC = () => {
               </p>
               <p className="text-pink-300 text-sm">MP3, WAV, or FLAC</p>
             </div>
-          )}
+          )} */}
 
           {/* Step 2: Editor */}
           <div className={fileLoaded ? "block" : "hidden"}>

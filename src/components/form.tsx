@@ -9,8 +9,6 @@ import { FormEvent, useContext, useEffect, useState } from "react";
 export default function Form() {
   const [url, setUrl] = useState<string>("");
 
-  const context = useContext(StateContext);
-
   const { handleSetData } = useStateData();
 
   async function handleForm(ev: FormEvent<HTMLFormElement>) {

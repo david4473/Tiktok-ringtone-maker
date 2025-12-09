@@ -25,17 +25,21 @@ export interface Music {
 }
 
 export interface TikTokPost {
-  author: Author;
-  createTime: number; // Unix timestamp
-  desc: string;
-  hashtag: string[];
-  id: string;
-  isADS: boolean;
-  isTurnOffComment: boolean;
-  music: Music;
-  statistics: Statistics;
-  type: string; // Could be more specific like 'video' | 'image' | 'text'
-  video: Video;
-  status: string;
-  [key: string]: any; // For any additional properties
+  data: {
+    result: {
+      author: Author;
+      createTime: number; // Unix timestamp
+      desc: string;
+      hashtag: string[];
+      id: string;
+      isADS: boolean;
+      isTurnOffComment: boolean;
+      music: Music;
+      statistics: Statistics;
+      type: string; // Could be more specific like 'video' | 'image' | 'text'
+      video: Video;
+      status: string;
+      [key: string]: any; // For any additional properties
+    };
+  };
 }
