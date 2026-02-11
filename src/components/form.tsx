@@ -29,7 +29,7 @@ export default function Form() {
             name="url"
             type="text"
             placeholder="Paste Tiktok video URL here"
-            className="w-lg p-2 border-2 rounded mr-2"
+            className="w-lg p-2 border-2 rounded mr-2 border-cyan-500"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setUrl(e.target.value)
             }

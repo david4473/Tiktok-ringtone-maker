@@ -1,4 +1,4 @@
-const handleExport = useCallback((format: "ios" | "android") => {
+/* const handleExport = (format: "ios" | "android") => {
   if (!wavesurferRef.current || !regionsRef.current) return;
 
   // Get the first region (our selection)
@@ -39,7 +39,7 @@ const handleExport = useCallback((format: "ios" | "android") => {
     // DataView.buffer is ArrayBufferLike in lib types, so create a Uint8Array view with proper offset/length
     (wavData as DataView).buffer as ArrayBuffer,
     (wavData as DataView).byteOffset,
-    (wavData as DataView).byteLength
+    (wavData as DataView).byteLength,
   );
   const blob = new Blob([wavUint8], { type: "audio/wav" });
 
@@ -55,4 +55,5 @@ const handleExport = useCallback((format: "ios" | "android") => {
   document.body.appendChild(a);
   a.click();
   window.URL.revokeObjectURL(url);
-}, []);
+};
+ */

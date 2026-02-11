@@ -5,7 +5,7 @@ import WaveSurfer from "wavesurfer.js";
 import RegionsPlugin, {
   Region,
 } from "wavesurfer.js/dist/plugins/regions.esm.js";
-import { Upload, Play, Pause, Download, Music } from "lucide-react";
+import { Play, Pause, Download, Music } from "lucide-react";
 import useStateData from "@/hooks/useStateData";
 import { encodeWAV } from "@/utils/encodeWave";
 
@@ -31,8 +31,8 @@ const CuteRingtoneMaker: React.FC = () => {
     if (waveformRef.current && !wavesurferRef.current) {
       wavesurferRef.current = WaveSurfer.create({
         container: waveformRef.current,
-        waveColor: "#C4B5FD", // Soft Purple
-        progressColor: "#8B5CF6", // Darker Purple
+        waveColor: "#104e64", //#C4B5FD // Soft Purple
+        progressColor: "#EC4899", // Darker Purple
         cursorColor: "#EC4899", // Pink
         barWidth: 3,
         barRadius: 3,
