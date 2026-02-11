@@ -2,7 +2,7 @@
 import useStateData from "@/hooks/useStateData";
 import { TikTokPost } from "@/lib/types";
 import { formAction } from "@/utils/form-action";
-import { ArrowDownToLine } from "lucide-react";
+import { ArrowDownToLine, FileSearchCorner } from "lucide-react";
 import { FormEvent, useState } from "react";
 
 export default function Form() {
@@ -34,9 +34,9 @@ export default function Form() {
               setUrl(e.target.value)
             }
           />
-          <button className="inline-flex items-center bg-cyan-500 rounded p-2 cursor-pointer hover:bg-cyan-600 active:bg-cyan-700 text-amber-50">
-            <ArrowDownToLine size={20} />
-            Download
+          <button className="inline-flex gap-0.5 items-center bg-cyan-500 rounded p-2 cursor-pointer hover:bg-cyan-600 active:bg-cyan-700 text-amber-50">
+            <FileSearchCorner size={20} />
+            Search
           </button>
         </div>
       </form>
