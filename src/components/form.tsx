@@ -3,7 +3,7 @@ import useStateData from "@/hooks/useStateData";
 import { TikTokPost } from "@/lib/types";
 import { formAction } from "@/utils/form-action";
 import { ArrowDownToLine } from "lucide-react";
-import { FormEvent, useContext, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 
 export default function Form() {
   const [url, setUrl] = useState<string>("");

@@ -5,7 +5,7 @@ export interface Author {
   nickname: string;
   signature: string;
   // Use optional properties for any additional fields
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface Music {
@@ -21,7 +21,7 @@ export interface Music {
   isOriginalSound: boolean;
   playUrl: string[];
   title: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface TikTokPost {
@@ -39,7 +39,7 @@ export interface TikTokPost {
       type: string; // Could be more specific like 'video' | 'image' | 'text'
       video: Video;
       status: string;
-      [key: string]: any; // For any additional properties
+      [key: string]: unknown; // For any additional properties
     };
   };
 }
