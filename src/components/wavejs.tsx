@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  ReactEventHandler,
-} from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import WaveSurfer from "wavesurfer.js";
 import RegionsPlugin, {
   Region,
@@ -48,7 +42,7 @@ const CuteRingtoneMaker: React.FC = () => {
 
       // Add Regions Plugin
       const wsRegions = wavesurferRef.current.registerPlugin(
-        RegionsPlugin.create()
+        RegionsPlugin.create(),
       );
       regionsRef.current = wsRegions;
 
@@ -58,7 +52,7 @@ const CuteRingtoneMaker: React.FC = () => {
         wsRegions.addRegion({
           start: 0,
           end: Math.min(30, d),
-          color: "rgba(236, 72, 153, 0.3)", // Pink with opacity
+          color: "rgba(0, 255, 255, 0.3)", // Pink with opacity
           drag: true,
           resize: true,
         });
@@ -163,7 +157,7 @@ const CuteRingtoneMaker: React.FC = () => {
       // DataView.buffer is ArrayBufferLike in lib types, so create a Uint8Array view with proper offset/length
       (wavData as DataView).buffer as ArrayBuffer,
       (wavData as DataView).byteOffset,
-      (wavData as DataView).byteLength
+      (wavData as DataView).byteLength,
     );
     const blob = new Blob([wavUint8], { type: "audio/wav" });
 
@@ -182,21 +176,9 @@ const CuteRingtoneMaker: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-pink-50 flex items-center justify-center p-6 font-sans">
+    <div className="min-h-screen w-full bg-cyan-50 flex items-center justify-center p-6 font-sans">
       <div className="bg-white w-full max-w-2xl rounded-[2rem] shadow-xl overflow-hidden border-4 border-white">
         {/* Header */}
-        <div className="bg-gradient-to-r from-pink-300 to-purple-300 p-8 text-center">
-          <div className="inline-flex items-center justify-center bg-white p-3 rounded-full mb-4 shadow-sm">
-            <Music className="text-pink-500 w-8 h-8" />
-          </div>
-          <h1 className="text-3xl font-extrabold text-white tracking-wide drop-shadow-sm">
-            Toneify
-          </h1>
-          <p className="text-white/90 mt-2 font-medium">
-            Make your phone sound cute! ✨
-          </p>
-        </div>
-
         <div className="p-8 space-y-8">
           {/* Step 1: Upload */}
           {/*           {!fileLoaded && (
@@ -220,13 +202,13 @@ const CuteRingtoneMaker: React.FC = () => {
           {/* Step 2: Editor */}
           <div className={fileLoaded ? "block" : "hidden"}>
             <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-2 bg-purple-50 px-4 py-2 rounded-full">
-                <Music className="w-4 h-4 text-purple-400" />
-                <span className="text-purple-600 font-medium truncate max-w-[150px]">
+              <div className="flex items-center space-x-2 bg-cyan-50 px-4 py-2 rounded-full">
+                <Music className="w-4 h-4 text-cyan-900" />
+                <span className="text-cyan-900 font-medium truncate max-w-[150px]">
                   {fileName}
                 </span>
               </div>
-              <div className="text-xs font-bold text-pink-400 uppercase tracking-widest bg-pink-100 px-3 py-1 rounded-full">
+              <div className="text-xs font-bold text-cyan-900 uppercase tracking-widest bg-cyan-100 px-3 py-1 rounded-full">
                 Max 30s
               </div>
             </div>
@@ -234,14 +216,14 @@ const CuteRingtoneMaker: React.FC = () => {
             {/* Waveform Container */}
             <div
               ref={waveformRef}
-              className="w-full rounded-xl overflow-hidden bg-purple-50 border-2 border-purple-100 mb-6"
+              className="w-full rounded-xl overflow-hidden bg-cyan-50 border-2 border-cyan-100 mb-6"
             />
 
             {/* Controls */}
             <div className="flex justify-center mb-8">
               <button
                 onClick={handlePlayPause}
-                className="bg-pink-400 hover:bg-pink-500 text-white rounded-full p-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                className="bg-cyan-500 hover:bg-cyan-600 text-white rounded-full p-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
               >
                 {isPlaying ? (
                   <Pause fill="currentColor" />
