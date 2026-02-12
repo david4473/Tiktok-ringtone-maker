@@ -71,7 +71,6 @@ const CuteRingtoneMaker: React.FC = () => {
       });
 
       wsRegions.on("region-out", (region) => {
-        console.log("region-out", region);
         region.play();
       });
     }
@@ -99,13 +98,17 @@ const CuteRingtoneMaker: React.FC = () => {
   }; */
 
   useEffect(() => {
-    if (data) {
-      setFileName(data.data.result.author.username);
-      setFileLoaded(true);
+    try {
+      if (data) {
+        setFileName(data?.data?.result?.author?.username);
+        setFileLoaded(true);
 
-      if (wavesurferRef.current) {
-        wavesurferRef.current.load(data.data.result.music.playUrl[0]);
+        if (wavesurferRef.current) {
+          wavesurferRef.current.load(data.data.result.music.playUrl[0]);
+        }
       }
+    } catch (error) {
+      console.log("error: ", error);
     }
   }, [data]);
 
@@ -176,7 +179,7 @@ const CuteRingtoneMaker: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen w-full bg-cyan-50 flex items-center justify-center p-6 font-sans">
+    <div className="sm:min-h-screen w-full bg-cyan-50 flex items-center justify-center p-3 font-sans">
       <div className="bg-white w-full max-w-2xl rounded-[2rem] shadow-xl overflow-hidden border-4 border-white">
         {/* Header */}
         <div className="p-8 space-y-8">

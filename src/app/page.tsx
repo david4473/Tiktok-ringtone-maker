@@ -8,7 +8,7 @@ import { Music } from "lucide-react";
 export default function Home() {
   const data = useStateData().data;
   return (
-    <div className="font-sans items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+    <div className="font-sans items-center justify-items-center min-h-screen sm:p8 sm:pb-20 gap-16">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         {/*Header*/}
         <div className="text-center w-full">
