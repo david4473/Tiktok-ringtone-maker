@@ -179,7 +179,7 @@ const CuteRingtoneMaker: React.FC = () => {
   }, []);
 
   return (
-    <div className="sm:min-h-screen w-full bg-cyan-50 flex items-center justify-center p-3 font-sans">
+    <div className="w-full lg:mt-8 bg-cyan-50 flex items-center justify-center sm:p-3 font-sans">
       <div className="bg-white w-full max-w-2xl rounded-[2rem] shadow-xl overflow-hidden border-4 border-white">
         {/* Header */}
         <div className="p-8 space-y-8">
