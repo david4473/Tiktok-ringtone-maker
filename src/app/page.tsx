@@ -26,7 +26,14 @@ export default function Home() {
           </p>
         </div>
         <Form />
-        {submitted ? <PropagateLoader color="#104e64" /> : data && <Editor />}
+        {submitted ? (
+          <div className="w-full flex items-center justify-center flex-col h-80">
+            <PropagateLoader color="#104e64" />
+            <p className="m-8">Smoking balalaika...</p>
+          </div>
+        ) : (
+          data && <Editor />
+        )}
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"></footer>
     </div>
