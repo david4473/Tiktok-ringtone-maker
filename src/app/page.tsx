@@ -1,12 +1,13 @@
 "use client";
 
 import Form from "@/components/form";
-import CuteRingtoneMaker from "@/components/wavejs";
+import Editor from "@/components/Editor";
 import useStateData from "@/hooks/useStateData";
 import { Music } from "lucide-react";
+import { PropagateLoader } from "react-spinners";
 
 export default function Home() {
-  const data = useStateData().data;
+  const { data, submitted } = useStateData();
   return (
     <div className="font-sans pt-8 items-center justify-items-center min-h-screen sm:p8 sm:pb-20 gap-16 bg-cyan-50">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -25,7 +26,7 @@ export default function Home() {
           </p>
         </div>
         <Form />
-        {data && <CuteRingtoneMaker />}
+        {submitted ? <PropagateLoader color="#104e64" /> : data && <Editor />}
       </main>
       <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center"></footer>
     </div>

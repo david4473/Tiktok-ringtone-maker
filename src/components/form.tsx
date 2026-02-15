@@ -3,22 +3,25 @@ import useStateData from "@/hooks/useStateData";
 import { TikTokPost } from "@/lib/types";
 import { formAction } from "@/utils/form-action";
 import { ArrowDownToLine, FileSearchCorner } from "lucide-react";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 
 export default function Form() {
   const [url, setUrl] = useState<string>("");
 
-  const { handleSetData } = useStateData();
+  const { handleSetData, handleSubmitted } = useStateData();
 
-  async function handleForm(ev: FormEvent<HTMLFormElement>) {
+  async function handleForm(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
 
-    if (!url && !url.includes("tiktok.com")) return;
+    handleSubmitted(true);
+    if (!url || !url.includes("tiktok.com")) {
+      alert("Invalid URL, or missing Tiktok url");
+      return;
+    }
 
     const data: TikTokPost = await formAction(url);
-    console.log(data);
-
     handleSetData(data);
+    handleSubmitted(false);
   }
 
   return (
@@ -29,7 +32,7 @@ export default function Form() {
             name="url"
             type="text"
             placeholder="Paste Tiktok video URL here"
-            className="sm:w-lg w-full p-2 border-2 rounded mr-2 border-cyan-500"
+            className="sm:w-lg w-full p-2 border-2 rounded mr-2 border-cyan-500 placeholder:text-cyan-950"
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               setUrl(e.target.value)
             }

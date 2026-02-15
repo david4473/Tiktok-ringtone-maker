@@ -9,7 +9,7 @@ import { Play, Pause, Download, Music } from "lucide-react";
 import useStateData from "@/hooks/useStateData";
 import { encodeWAV } from "@/utils/encodeWave";
 
-const CuteRingtoneMaker: React.FC = () => {
+const Editor: React.FC = () => {
   // refs
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
@@ -24,7 +24,7 @@ const CuteRingtoneMaker: React.FC = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [duration, setDuration] = useState<number>(0);
 
-  const { data } = useStateData();
+  const { data, handleSubmitted } = useStateData();
 
   // Initialize Wavesurfer
   useEffect(() => {
@@ -183,7 +183,7 @@ const CuteRingtoneMaker: React.FC = () => {
       <div className="bg-white w-full max-w-2xl rounded-[2rem] shadow-xl overflow-hidden border-4 border-white">
         {/* Header */}
         <div className="p-8 space-y-8">
-          {/* Step 1: Upload */}
+          {/* Upload */}
           {/*           {!fileLoaded && (
             <div className="border-4 border-dashed border-pink-200 rounded-3xl p-10 flex flex-col items-center justify-center bg-pink-50/50 hover:bg-pink-100/50 transition-colors cursor-pointer relative">
               <input
@@ -202,7 +202,7 @@ const CuteRingtoneMaker: React.FC = () => {
             </div>
           )} */}
 
-          {/* Step 2: Editor */}
+          {/* Editor */}
           <div className={fileLoaded ? "block" : "hidden"}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2 bg-cyan-50 px-4 py-2 rounded-full">
@@ -272,4 +272,4 @@ const CuteRingtoneMaker: React.FC = () => {
   );
 };
 
-export default CuteRingtoneMaker;
+export default Editor;
