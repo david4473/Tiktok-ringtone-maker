@@ -19,8 +19,9 @@ export default function Form() {
       return;
     }
 
-    const data: TikTokPost = await formAction(url);
-    handleSetData(data);
+    const data = await formAction(url);
+
+    handleSetData(data as unknown as TikTokPost);
     handleSubmitted(false);
   }
 
