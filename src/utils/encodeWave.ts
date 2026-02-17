@@ -2,8 +2,21 @@
 // typed explicitly for Float32Array (audio data) and number
 export const encodeWAV = (
   samples: Float32Array,
-  sampleRate: number
+  sampleRate: number,
+  numChannels: number = 1,
 ): DataView => {
+  // Find peak amplitude across all samples
+  let peak = 0;
+  for (let i = 0; i < samples.length; i++) {
+    const abs = Math.abs(samples[i]);
+    if (abs > peak) peak = abs;
+  }
+
+  // Normalize to 95% of max headroom — ideal for ringtone exports.
+  // If audio is already within range and not silent, still normalize up
+  // to maximize perceived loudness.
+  const gain = peak > 0 ? (1.0 / peak) * 0.95 : 1.0;
+
   const buffer = new ArrayBuffer(44 + samples.length * 2);
   const view = new DataView(buffer);
 
@@ -19,10 +32,10 @@ export const encodeWAV = (
   writeString(view, 12, "fmt ");
   view.setUint32(16, 16, true);
   view.setUint16(20, 1, true);
-  view.setUint16(22, 1, true);
+  view.setUint16(22, numChannels, true); // ✓ dynamic
   view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
+  view.setUint32(28, sampleRate * numChannels * 2, true); // ✓ byteRate
+  view.setUint16(32, numChannels * 2, true); // ✓ blockAlign
   view.setUint16(34, 16, true);
   writeString(view, 36, "data");
   view.setUint32(40, samples.length * 2, true);
@@ -30,10 +43,11 @@ export const encodeWAV = (
   const floatTo16BitPCM = (
     output: DataView,
     offset: number,
-    input: Float32Array
+    input: Float32Array,
   ) => {
     for (let i = 0; i < input.length; i++, offset += 2) {
-      const s = Math.max(-1, Math.min(1, input[i]));
+      // Apply gain then clamp — gain should prevent clipping but clamp is a safety net
+      const s = Math.max(-1, Math.min(1, input[i] * gain));
       output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7fff, true);
     }
   };

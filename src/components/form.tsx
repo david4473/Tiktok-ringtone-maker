@@ -20,7 +20,6 @@ export default function Form() {
     }
 
     const data = await formAction(url);
-
     handleSetData(data as unknown as TikTokPost);
     handleSubmitted(false);
   }

@@ -135,26 +135,28 @@ const Editor: React.FC = () => {
 
     // Get original AudioBuffer
     const originalBuffer = wavesurferRef.current.getDecodedData();
-
     if (!originalBuffer) {
       alert("Audio data not ready yet.");
       return;
     }
 
     const sampleRate = originalBuffer.sampleRate;
-
-    // Calculate start/end frames
+    const numChannels = originalBuffer.numberOfChannels;
     const startFrame = Math.floor(start * sampleRate);
     const endFrame = Math.floor(end * sampleRate);
+    const frameCount = endFrame - startFrame;
 
-    // Create a new buffer for the snippet
-    // Extracting Mono channel (Channel 0) for simplicity
-    const channelData = originalBuffer
-      .getChannelData(0)
-      .slice(startFrame, endFrame);
+    // Interleave all channels (e.g. L,R,L,R... for stereo)
+    const interleaved = new Float32Array(frameCount * numChannels);
+    for (let channel = 0; channel < numChannels; channel++) {
+      const channelData = originalBuffer.getChannelData(channel);
+      for (let i = 0; i < frameCount; i++) {
+        interleaved[i * numChannels + channel] = channelData[startFrame + i];
+      }
+    }
 
-    // Encode to WAV
-    const wavData = encodeWAV(channelData, sampleRate);
+    const wavData = encodeWAV(interleaved, sampleRate, numChannels);
+
     // Convert DataView to a Uint8Array (respecting byteOffset/byteLength) so it's a valid BlobPart
     const wavUint8 = new Uint8Array(
       // DataView.buffer is ArrayBufferLike in lib types, so create a Uint8Array view with proper offset/length
@@ -162,6 +164,7 @@ const Editor: React.FC = () => {
       (wavData as DataView).byteOffset,
       (wavData as DataView).byteLength,
     );
+
     const blob = new Blob([wavUint8], { type: "audio/wav" });
 
     // Create Download Link
