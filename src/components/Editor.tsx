@@ -8,23 +8,46 @@ import RegionsPlugin, {
 import { Play, Pause, Download, Music } from "lucide-react";
 import useStateData from "@/hooks/useStateData";
 import { encodeWAV } from "@/utils/encodeWave";
+import { FFmpeg } from "@ffmpeg/ffmpeg";
 
 const Editor: React.FC = () => {
   // refs
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const regionsRef = useRef<RegionsPlugin | null>(null);
+  const ffmpegRef = useRef<FFmpeg | null>(null);
 
   // States
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [fileLoaded, setFileLoaded] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>("");
+  const [ffmpegLoaded, setFFmpegLoaded] = useState<boolean>(false);
 
   // Note: duration is used for logic but not rendered in this simplified UI
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [duration, setDuration] = useState<number>(0);
 
   const { data, handleSubmitted } = useStateData();
+
+  // Initialize FFmpeg on component mount
+  useEffect(() => {
+    const loadFFmpeg = async () => {
+      if (!ffmpegRef.current) {
+        const ffmpeg = new FFmpeg();
+        ffmpegRef.current = ffmpeg;
+
+        // Logging ffmpeg: optional
+        ffmpeg.on("log", ({ message }) => {
+          console.log("[FFmpeg]", message);
+        });
+
+        await ffmpeg.load();
+        setFFmpegLoaded(true);
+      }
+    };
+
+    loadFFmpeg();
+  }, []);
 
   // Initialize Wavesurfer
   useEffect(() => {
@@ -119,67 +142,132 @@ const Editor: React.FC = () => {
   };
 
   // Logic to cut audio and download
-  const handleExport = useCallback((format: "ios" | "android") => {
-    if (!wavesurferRef.current || !regionsRef.current) return;
+  const handleExport = useCallback(
+    async (format: "ios" | "android") => {
+      if (!wavesurferRef.current || !regionsRef.current || !ffmpegRef.current)
+        return;
 
-    // Get the first region (our selection)
-    const regions = regionsRef.current.getRegions();
-    if (regions.length === 0) {
-      alert("Please select a region first!");
-      return;
-    }
-
-    const region = regions[0];
-    const start = region.start;
-    const end = region.end;
-
-    // Get original AudioBuffer
-    const originalBuffer = wavesurferRef.current.getDecodedData();
-    if (!originalBuffer) {
-      alert("Audio data not ready yet.");
-      return;
-    }
-
-    const sampleRate = originalBuffer.sampleRate;
-    const numChannels = originalBuffer.numberOfChannels;
-    const startFrame = Math.floor(start * sampleRate);
-    const endFrame = Math.floor(end * sampleRate);
-    const frameCount = endFrame - startFrame;
-
-    // Interleave all channels (e.g. L,R,L,R... for stereo)
-    const interleaved = new Float32Array(frameCount * numChannels);
-    for (let channel = 0; channel < numChannels; channel++) {
-      const channelData = originalBuffer.getChannelData(channel);
-      for (let i = 0; i < frameCount; i++) {
-        interleaved[i * numChannels + channel] = channelData[startFrame + i];
+      // Get the first region (our selection)
+      const regions = regionsRef.current.getRegions();
+      if (regions.length === 0) {
+        alert("Please select a region first!");
+        return;
       }
-    }
 
-    const wavData = encodeWAV(interleaved, sampleRate, numChannels);
+      if (!ffmpegLoaded) {
+        alert("Audio converter is still loading, please wait...");
+      }
 
-    // Convert DataView to a Uint8Array (respecting byteOffset/byteLength) so it's a valid BlobPart
-    const wavUint8 = new Uint8Array(
-      // DataView.buffer is ArrayBufferLike in lib types, so create a Uint8Array view with proper offset/length
-      (wavData as DataView).buffer as ArrayBuffer,
-      (wavData as DataView).byteOffset,
-      (wavData as DataView).byteLength,
-    );
+      const region = regions[0];
+      const start = region.start;
+      const end = region.end;
 
-    const blob = new Blob([wavUint8], { type: "audio/wav" });
+      // Get original AudioBuffer
+      const originalBuffer = wavesurferRef.current.getDecodedData();
+      if (!originalBuffer) {
+        alert("Audio data not ready yet.");
+        return;
+      }
 
-    // Create Download Link
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.style.display = "none";
-    a.href = url;
+      const sampleRate = originalBuffer.sampleRate;
+      const numChannels = originalBuffer.numberOfChannels;
+      const startFrame = Math.floor(start * sampleRate);
+      const endFrame = Math.floor(end * sampleRate);
+      const frameCount = endFrame - startFrame;
 
-    const extension = format === "ios" ? "m4r" : "mp3";
+      // Interleave all channels (e.g. L,R,L,R... for stereo)
+      const interleaved = new Float32Array(frameCount * numChannels);
+      for (let channel = 0; channel < numChannels; channel++) {
+        const channelData = originalBuffer.getChannelData(channel);
+        for (let i = 0; i < frameCount; i++) {
+          interleaved[i * numChannels + channel] = channelData[startFrame + i];
+        }
+      }
 
-    a.download = `ringtone-${Date.now()}.${extension}`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-  }, []);
+      const wavData = encodeWAV(interleaved, sampleRate, numChannels);
+
+      // Convert DataView to a Uint8Array (respecting byteOffset/byteLength) so it's a valid BlobPart
+      const wavUint8 = new Uint8Array(
+        // DataView.buffer is ArrayBufferLike in lib types, so create a Uint8Array view with proper offset/length
+        (wavData as DataView).buffer as ArrayBuffer,
+        (wavData as DataView).byteOffset,
+        (wavData as DataView).byteLength,
+      );
+
+      try {
+        const ffmpeg = ffmpegRef.current;
+
+        // Write WAV to FFmpeg's virtual filesystem
+        await ffmpeg.writeFile("input.wav", wavUint8);
+
+        if (format == "ios") {
+          // iOS ringtones: AAC codec, M4A container, renamed to .m4r
+          // Max 40 seconds, fade in/out recommended
+
+          await ffmpeg.exec([
+            "-i",
+            "input.wav",
+            "-c:a",
+            "aac", // AAC codec
+            "-b:a",
+            "128k", // Bitrate
+            "-ar",
+            "44100", // Sample rate (iOS compatible)
+            "-ac",
+            "2", // Stereo
+            "-f",
+            "ipod", // M4A container optimized for iPod/iOS
+            "output.m4r",
+          ]);
+        } else {
+          // Android: MP3 format
+          await ffmpeg.exec([
+            "-i",
+            "input.wav",
+            "-c:a",
+            "libmp3lame", // MP3 codec
+            "-b:a",
+            "192k", // Bitrate
+            "-ar",
+            "44100", // Sample rate
+            "output.mp3",
+          ]);
+        }
+
+        // Read the output file
+        const outputFilename = format === "ios" ? "output.m4r" : "output.mp3";
+        const data = (await ffmpeg.readFile(outputFilename)) as Uint8Array;
+
+        // Clone the data to ensure proper typing
+        const blobData = new Uint8Array(data);
+
+        // Create blob and download
+        const mimeType = format === "ios" ? "audio/mp4" : "audio/mpeg";
+        const blob = new Blob([blobData], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = `ringtone-${Date.now()}.${format === "ios" ? "m4r" : "mp3"}`;
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        }, 100);
+
+        // Clean up FFmpeg virtual filesystem
+        await ffmpeg.deleteFile("input.wav");
+        await ffmpeg.deleteFile(outputFilename);
+      } catch (error) {
+        console.error("FFmpeg conversion error:", error);
+        alert("Failed to convert audio. Please try again.");
+      }
+    },
+    [ffmpegLoaded],
+  );
 
   return (
     <div className="w-full lg:mt-8 bg-cyan-50 flex items-center justify-center sm:p-3 font-sans">
