@@ -236,7 +236,9 @@ const Editor: React.FC = () => {
         });
 
         if (!response.ok) {
-          throw new Error(`Audio download failed with status ${response.status}`);
+          throw new Error(
+            `Audio download failed with status ${response.status}`,
+          );
         }
 
         const audioBlob = await response.blob();
@@ -308,7 +310,9 @@ const Editor: React.FC = () => {
 
       if (!originalBuffer) {
         setEditorMessageKind("default");
-        setEditorMessage("Audio data is still preparing. Please wait a moment.");
+        setEditorMessage(
+          "Audio data is still preparing. Please wait a moment.",
+        );
         setExportingFormat(null);
         return;
       }
@@ -369,7 +373,9 @@ const Editor: React.FC = () => {
         }
 
         const outputFilename = format === "ios" ? "output.m4r" : "output.mp3";
-        const outputData = (await ffmpeg.readFile(outputFilename)) as Uint8Array;
+        const outputData = (await ffmpeg.readFile(
+          outputFilename,
+        )) as Uint8Array;
         const blob = new Blob([new Uint8Array(outputData)], {
           type: format === "ios" ? "audio/mp4" : "audio/mpeg",
         });
@@ -412,8 +418,11 @@ const Editor: React.FC = () => {
               {trackTitle}
             </h2>
             <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
-              Sound from <span className="font-semibold text-[var(--tone-ink)]">{fileName}</span>.
-              Resize the highlighted band until the cut feels right.
+              Sound from{" "}
+              <span className="font-semibold text-[var(--tone-ink)]">
+                {fileName}
+              </span>
+              . Resize the highlighted band until the cut feels right.
             </p>
           </div>
           <div className="rounded-[1.4rem] border border-[rgba(255,107,74,0.22)] bg-[var(--tone-accent-soft)] px-4 py-3 text-sm font-semibold text-[var(--tone-ink)] shadow-[0_10px_24px_-20px_rgba(255,107,74,0.35)]">
@@ -448,7 +457,9 @@ const Editor: React.FC = () => {
                       <div className="h-2 overflow-hidden rounded-full bg-white/75 ring-1 ring-[rgba(255,107,74,0.14)]">
                         <div
                           className="h-full rounded-full bg-[var(--tone-accent)] transition-[width] duration-300"
-                          style={{ width: `${Math.round(ffmpegProgress * 100)}%` }}
+                          style={{
+                            width: `${Math.round(ffmpegProgress * 100)}%`,
+                          }}
                         />
                       </div>
                       <p className="mt-2 text-xs font-semibold uppercase tracking-[0.18em] text-[color:color-mix(in_srgb,var(--tone-error-text)_82%,white)]">
@@ -492,14 +503,17 @@ const Editor: React.FC = () => {
           <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(255,107,74,0.22)] bg-[var(--tone-accent-soft)] text-[var(--tone-accent)]">
             <Scissors className="h-4 w-4" />
           </div>
-          Drag either edge of the highlighted region to choose the exact snippet.
+          Drag either edge of the highlighted region to choose the exact
+          snippet.
         </div>
 
         <div className="mt-6 flex justify-center">
           <button
             onClick={handlePlayPause}
             disabled={waveformLoading}
-            aria-label={isPlaying ? "Pause audio preview" : "Play audio preview"}
+            aria-label={
+              isPlaying ? "Pause audio preview" : "Play audio preview"
+            }
             className="inline-flex h-16 w-16 items-center justify-center rounded-full border border-[rgba(255,255,255,0.3)] bg-[var(--tone-ink)] text-white shadow-[0_18px_32px_-18px_rgba(15,63,69,0.5)] transition hover:bg-[var(--tone-accent)] disabled:cursor-not-allowed disabled:border-transparent disabled:bg-[var(--tone-muted)]"
           >
             {isPlaying ? (
