@@ -10,11 +10,11 @@ const footerLinks = [
 
 export default function SiteFooter() {
   return (
-    <footer className="px-4 pb-8 pt-2 sm:px-6 sm:pb-10">
-      <div className="mx-auto w-full max-w-5xl rounded-[1.8rem] border border-[var(--tone-border)] bg-white/88 px-6 py-7 shadow-[0_18px_38px_-34px_rgba(20,63,69,0.25)]">
+    <footer className="px-4 py-8 sm:px-6">
+      <div className="mx-auto w-full max-w-6xl">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="max-w-2xl">
-            <h2 className="text-lg font-black tracking-[-0.04em] text-[var(--tone-ink)]">
+            <h2 className="text-lg font-black text-[var(--tone-ink)]">
               TikTok Ringtone Maker
             </h2>
             <p className="mt-2 text-sm leading-7 text-[var(--tone-ink-soft)]">
@@ -31,7 +31,7 @@ export default function SiteFooter() {
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-full border border-[var(--tone-border)] px-3 py-2 transition hover:border-[var(--tone-accent)] hover:text-[var(--tone-ink)]"
+                className="rounded-full px-3 py-2 transition hover:text-[var(--tone-accent)]"
               >
                 {item.label}
               </Link>
@@ -39,7 +39,7 @@ export default function SiteFooter() {
           </nav>
         </div>
 
-        <div className="mt-6 border-t border-[var(--tone-border)] pt-4 text-xs leading-6 text-[var(--tone-ink-soft)]">
+        <div className="mt-6 border-t border-[var(--tone-border)] pt-4 text-xs leading-6 text-[var(--tone-muted)]">
           <p>
             This website is an independent web tool and is not affiliated with
             or endorsed by TikTok. TikTok is a trademark of its respective

@@ -3,12 +3,34 @@
 import Editor from "@/components/Editor";
 import Form from "@/components/form";
 import useStateData from "@/hooks/useStateData";
-import { AudioLines, Scissors, ShieldCheck, Smartphone } from "lucide-react";
+import {
+  CheckCircle2,
+  Download,
+  FileAudio,
+  Gauge,
+  Scissors,
+  Smartphone,
+} from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { HashLoader } from "react-spinners";
+
+const toneModes = [
+  { id: "white", label: "White" },
+  { id: "dark", label: "Dark" },
+  { id: "orange", label: "Orange" },
+] as const;
+
+type ToneMode = (typeof toneModes)[number]["id"];
 
 export default function Home() {
   const { data, submitted } = useStateData();
+  const [toneMode, setToneMode] = useState<ToneMode>("white");
+
+  useEffect(() => {
+    document.documentElement.dataset.toneMode = toneMode;
+  }, [toneMode]);
+
   const appSchema = {
     "@context": "https://schema.org",
     "@type": "WebApplication",
@@ -56,8 +78,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--tone-bg)] px-4 py-6 sm:px-6 sm:py-10">
-      <main className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+    <div className="min-h-screen bg-[var(--tone-bg)] px-4 pb-8 pt-2 transition-colors duration-200 sm:px-6">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-14">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema) }}
@@ -67,158 +89,137 @@ export default function Home() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
 
-        <section className="tone-hero overflow-hidden px-6 py-10 text-center sm:px-10 sm:py-14">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[var(--tone-border)] bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[var(--tone-ink-soft)]">
-            <AudioLines className="h-3.5 w-3.5" />
-            TikTok Ringtone Maker
-          </div>
-          <h1 className="mx-auto mt-6 max-w-3xl text-4xl font-black tracking-[-0.05em] text-[var(--tone-ink)] sm:text-6xl">
-            Convert TikTok sounds into iPhone and Android ringtones.
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[var(--tone-ink-soft)] sm:text-lg">
-            Paste a TikTok link, preview the waveform, trim the exact clip you
-            want, and export a ringtone for iPhone or Android in seconds.
-          </p>
+        <section className="tone-hero px-0 pb-2 pt-10 text-center sm:pt-16">
+          <div className="mx-auto max-w-4xl">
+            <div className="mx-auto mb-7 flex w-fit rounded-full bg-[var(--tone-paper)] p-1">
+              {toneModes.map((mode) => (
+                <button
+                  key={mode.id}
+                  type="button"
+                  aria-pressed={toneMode === mode.id}
+                  onClick={() => setToneMode(mode.id)}
+                  className={`h-10 rounded-full px-5 text-sm font-extrabold transition ${
+                    toneMode === mode.id
+                      ? "bg-[var(--tone-accent)] text-white shadow-[0_12px_28px_-20px_var(--tone-shadow)]"
+                      : "text-[var(--tone-ink-soft)] hover:text-[var(--tone-ink)]"
+                  }`}
+                >
+                  {mode.label}
+                </button>
+              ))}
+            </div>
 
-          <div className="mt-8">
-            <Form />
-          </div>
+            <h1 className="text-5xl font-black leading-[0.98] text-[var(--tone-ink)] sm:text-7xl lg:text-8xl">
+              TikTok Ringtone Maker
+            </h1>
+            <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-[var(--tone-ink-soft)] sm:text-xl">
+              Convert TikTok sounds into iPhone and Android ringtones from your
+              browser. Paste a link, trim the clip, and download.
+            </p>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm text-[var(--tone-ink-soft)]">
-            <span className="tone-badge">TikTok to ringtone converter</span>
-            <span className="tone-badge">Fast waveform trimming</span>
-            <span className="tone-badge">iPhone and Android export</span>
+            <div className="mx-auto mt-9 max-w-3xl">
+              <Form />
+              <p className="mt-4 text-sm leading-6 text-[var(--tone-ink-soft)]">
+                Please only convert and use audio you have the right to use.
+              </p>
+            </div>
+
+            <div className="mx-auto mt-8 flex max-w-4xl flex-wrap justify-center gap-x-6 gap-y-3 text-left">
+              {[
+                ["Fast trim", Scissors],
+                ["Browser-based", Gauge],
+                ["M4R export", Smartphone],
+                ["MP3 export", Download],
+              ].map(([label, Icon]) => (
+                <div
+                  key={label as string}
+                  className="flex items-center gap-2 text-sm font-bold text-[var(--tone-ink-soft)]"
+                >
+                  <Icon className="h-4 w-4 text-[var(--tone-accent)]" />
+                  {label as string}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
         {submitted ? (
-          <div className="tone-panel flex min-h-[26rem] w-full flex-col items-center justify-center px-6 py-10 text-center">
-            <HashLoader color="#ff6b4a" size={42} />
-            <p className="mt-8 text-sm font-semibold uppercase tracking-[0.24em] text-[var(--tone-ink-soft)]">
-              Loading audio
-            </p>
+          <section className="tone-panel tone-shimmer mx-auto flex min-h-[18rem] w-full max-w-3xl flex-col items-center justify-center px-6 py-10 text-center">
+            <HashLoader color="var(--tone-accent)" size={42} />
+            <p className="tone-kicker mt-7">Loading audio</p>
             <p className="mt-3 max-w-sm text-lg leading-8 text-[var(--tone-ink)]">
               Fetching the sound and preparing the trim region.
             </p>
-          </div>
+          </section>
         ) : data ? (
-          <Editor />
-        ) : (
-          <div className="tone-panel flex min-h-[24rem] w-full flex-col items-center justify-center px-6 py-10 text-center">
-            <AudioLines className="h-12 w-12 text-[var(--tone-accent)]" />
-            <p className="mt-6 text-sm font-semibold uppercase tracking-[0.24em] text-[var(--tone-ink-soft)]">
-              Editor ready
-            </p>
-            <p className="mt-3 max-w-md text-lg leading-8 text-[var(--tone-ink)]">
-              Your waveform editor will appear here as soon as you load a TikTok
-              link above.
-            </p>
-          </div>
-        )}
+          <section className="mx-auto w-full max-w-4xl">
+            <Editor key={toneMode} />
+          </section>
+        ) : null}
 
-        <section className="grid gap-4 pt-2 sm:grid-cols-3">
-          <div className="tone-info-card">
-            <div className="tone-info-icon">
-              <ShieldCheck className="h-4 w-4" />
+        <section className="px-0 py-2">
+          <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+            <div>
+              <h2 className="text-3xl font-black text-[var(--tone-ink)] sm:text-4xl">
+                How to make a ringtone from a TikTok video
+              </h2>
+              <p className="mt-4 text-base leading-7 text-[var(--tone-ink-soft)]">
+                This TikTok ringtone maker keeps the workflow short: paste the
+                video URL, choose the best part of the sound, then download the
+                right file for your phone.
+              </p>
             </div>
-            <h2 className="mt-4 text-lg font-bold text-[var(--tone-ink)]">
-              Simple flow
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
-              Paste the link first. Everything else stays out of the way until
-              the audio is ready.
-            </p>
-          </div>
 
-          <div className="tone-info-card">
-            <div className="tone-info-icon">
-              <Scissors className="h-4 w-4" />
+            <div className="grid gap-6">
+              {[
+                [
+                  "Paste a TikTok link",
+                  "Drop in the TikTok URL for the sound or video you want to turn into a ringtone.",
+                ],
+                [
+                  "Trim the best part",
+                  "Use the waveform selector to pick the chorus, punchline, or drop you actually want to hear.",
+                ],
+                [
+                  "Export for your phone",
+                  "Download an M4R for iPhone or an MP3 for Android and set it as your ringtone.",
+                ],
+              ].map(([title, description], index) => (
+                <article key={title} className="flex gap-4">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--tone-paper)] text-sm font-black text-[var(--tone-accent)]">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-[var(--tone-ink)]">
+                      {title}
+                    </h3>
+                    <p className="mt-1 text-sm leading-6 text-[var(--tone-ink-soft)]">
+                      {description}
+                    </p>
+                  </div>
+                </article>
+              ))}
             </div>
-            <h2 className="mt-4 text-lg font-bold text-[var(--tone-ink)]">
-              Trim precisely
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
-              Wait for the selector to load, then drag the region until the cut
-              feels exactly right.
-            </p>
-          </div>
-
-          <div className="tone-info-card">
-            <div className="tone-info-icon">
-              <Smartphone className="h-4 w-4" />
-            </div>
-            <h2 className="mt-4 text-lg font-bold text-[var(--tone-ink)]">
-              Export cleanly
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
-              Choose `.m4r` for iPhone or `.mp3` for Android and save your tone.
-            </p>
           </div>
         </section>
 
-        <section className="tone-panel px-6 py-8 sm:px-8">
-          <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--tone-ink-soft)]">
-              How It Works
-            </p>
-            <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[var(--tone-ink)]">
-              How to make a ringtone from a TikTok video
-            </h2>
-            <p className="mt-4 text-base leading-7 text-[var(--tone-ink-soft)]">
-              This TikTok ringtone maker is designed for speed. Paste the video
-              URL, let the audio load, drag the waveform handles to isolate the
-              best moment, then download your ringtone in the right format for
-              your phone.
-            </p>
-          </div>
-
-          <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            <article className="tone-info-card">
-              <h3 className="text-lg font-bold text-[var(--tone-ink)]">
-                1. Paste a TikTok link
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
-                Drop in the TikTok URL for the sound or video you want to turn
-                into a ringtone.
-              </p>
-            </article>
-            <article className="tone-info-card">
-              <h3 className="text-lg font-bold text-[var(--tone-ink)]">
-                2. Trim the best part
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
-                Use the waveform selector to pick the chorus, punchline, or drop
-                you actually want to hear when your phone rings.
-              </p>
-            </article>
-            <article className="tone-info-card">
-              <h3 className="text-lg font-bold text-[var(--tone-ink)]">
-                3. Export for your phone
-              </h3>
-              <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
-                Download an `M4R` for iPhone or an `MP3` for Android and set it
-                as your ringtone.
-              </p>
-            </article>
-          </div>
-        </section>
-
-        <section className="grid gap-4 sm:grid-cols-2">
+        <section className="grid gap-8 sm:grid-cols-2">
           <article className="tone-info-card">
-            <h2 className="text-2xl font-black tracking-[-0.04em] text-[var(--tone-ink)]">
-              Why people search for a TikTok ringtone maker
+            <FileAudio className="mb-4 h-5 w-5 text-[var(--tone-accent)]" />
+            <h2 className="text-2xl font-black text-[var(--tone-ink)]">
+              Make the sound usable
             </h2>
             <p className="mt-3 text-sm leading-7 text-[var(--tone-ink-soft)]">
               Trending TikTok sounds often become the exact clips people want as
-              custom call tones, text tones, and alarm sounds. This tool makes
-              that process simpler by turning TikTok audio into a trimmed
-              ringtone file without forcing you through a heavy desktop editor.
+              custom call tones, text tones, and alarm sounds. This tool turns
+              TikTok audio into a trimmed ringtone file without a heavy editor.
             </p>
           </article>
 
           <article className="tone-info-card">
-            <h2 className="text-2xl font-black tracking-[-0.04em] text-[var(--tone-ink)]">
-              Built for iPhone and Android ringtone formats
+            <CheckCircle2 className="mb-4 h-5 w-5 text-[var(--tone-ready)]" />
+            <h2 className="text-2xl font-black text-[var(--tone-ink)]">
+              Built for phone formats
             </h2>
             <p className="mt-3 text-sm leading-7 text-[var(--tone-ink-soft)]">
               Export a TikTok sound as `M4R` for iPhone ringtone workflows or as
@@ -229,15 +230,12 @@ export default function Home() {
           </article>
         </section>
 
-        <section className="tone-panel px-6 py-8 sm:px-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--tone-ink-soft)]">
-            FAQ
-          </p>
-          <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-[var(--tone-ink)]">
+        <section className="px-0 py-2">
+          <h2 className="text-3xl font-black text-[var(--tone-ink)]">
             TikTok ringtone maker FAQ
           </h2>
           <div className="mt-6 grid gap-4">
-            <article className="tone-info-card">
+            <article className="pt-2">
               <h3 className="text-lg font-bold text-[var(--tone-ink)]">
                 Can I turn a TikTok sound into an iPhone ringtone?
               </h3>
@@ -246,7 +244,7 @@ export default function Home() {
                 as an `M4R` ringtone file for iPhone.
               </p>
             </article>
-            <article className="tone-info-card">
+            <article className="pt-2">
               <h3 className="text-lg font-bold text-[var(--tone-ink)]">
                 Can I use this TikTok ringtone maker on Android?
               </h3>
@@ -255,7 +253,7 @@ export default function Home() {
                 Android ringtone settings.
               </p>
             </article>
-            <article className="tone-info-card">
+            <article className="pt-2">
               <h3 className="text-lg font-bold text-[var(--tone-ink)]">
                 Do I need to download software?
               </h3>
@@ -267,7 +265,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-3">
+        <section className="grid gap-8 pt-2 sm:grid-cols-3">
           <Link href="/guides/iphone-ringtone" className="tone-info-card block">
             <h2 className="text-lg font-bold text-[var(--tone-ink)]">
               iPhone ringtone guide

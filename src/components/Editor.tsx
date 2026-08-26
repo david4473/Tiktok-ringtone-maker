@@ -128,13 +128,15 @@ const Editor: React.FC = () => {
 
   useEffect(() => {
     if (waveformRef.current && !wavesurferRef.current) {
+      const rootStyles = getComputedStyle(document.documentElement);
+
       wavesurferRef.current = WaveSurfer.create({
         container: waveformRef.current,
-        waveColor: "#b8d6d8",
-        progressColor: "#ff6b4a",
-        cursorColor: "#0f3f45",
+        waveColor: rootStyles.getPropertyValue("--tone-wave").trim(),
+        progressColor: rootStyles.getPropertyValue("--tone-wave-progress").trim(),
+        cursorColor: rootStyles.getPropertyValue("--tone-wave-cursor").trim(),
         barWidth: 3,
-        barRadius: 6,
+        barRadius: 8,
         height: 136,
         normalize: true,
       });
@@ -154,7 +156,7 @@ const Editor: React.FC = () => {
         wsRegions.addRegion({
           start: 0,
           end: Math.min(30, decodedDuration),
-          color: "rgba(255, 107, 74, 0.18)",
+          color: rootStyles.getPropertyValue("--tone-accent-soft").trim(),
           drag: true,
           resize: true,
         });
@@ -401,14 +403,14 @@ const Editor: React.FC = () => {
   );
 
   return (
-    <div className="tone-panel w-full px-5 py-5 sm:px-6 sm:py-6">
+    <div className="tone-panel tone-row-in w-full px-5 py-5 sm:px-6 sm:py-6">
       <div className={fileLoaded ? "block" : "hidden"}>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-[var(--tone-border)] pb-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--tone-ink-soft)]">
-              Now trimming
+            <p className="tone-kicker">
+              Ready to trim
             </p>
-            <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-[var(--tone-ink)] sm:text-3xl">
+            <h2 className="mt-2 text-2xl font-black text-[var(--tone-ink)] sm:text-3xl">
               {trackTitle}
             </h2>
             <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
@@ -416,7 +418,7 @@ const Editor: React.FC = () => {
               Resize the highlighted band until the cut feels right.
             </p>
           </div>
-          <div className="rounded-[1.4rem] border border-[rgba(255,107,74,0.22)] bg-[var(--tone-accent-soft)] px-4 py-3 text-sm font-semibold text-[var(--tone-ink)] shadow-[0_10px_24px_-20px_rgba(255,107,74,0.35)]">
+          <div className="rounded-full bg-[var(--tone-accent-soft)] px-4 py-3 text-sm font-bold text-[var(--tone-accent)]">
             Max 30 seconds
           </div>
         </div>
@@ -427,7 +429,7 @@ const Editor: React.FC = () => {
             tabIndex={-1}
             role="alert"
             aria-live="polite"
-            className={`mt-4 overflow-hidden rounded-[1.4rem] border border-[var(--tone-error-border)] bg-[var(--tone-error-bg)] text-sm text-[var(--tone-error-text)] outline-none transition-shadow ${
+            className={`mt-4 overflow-hidden rounded-2xl border border-[var(--tone-error-border)] bg-[var(--tone-error-bg)] text-sm text-[var(--tone-error-text)] outline-none transition-shadow ${
               highlightMessage ? "tone-pulse-ring" : ""
             }`}
           >
@@ -435,7 +437,7 @@ const Editor: React.FC = () => {
               {editorMessageKind === "ffmpeg-loading" ? (
                 <div
                   aria-hidden="true"
-                  className="absolute inset-y-0 left-0 bg-[color:color-mix(in_srgb,var(--tone-accent)_18%,transparent)] transition-[width] duration-300"
+                  className="absolute inset-y-0 left-0 bg-[color:color-mix(in_srgb,var(--tone-accent)_14%,transparent)] transition-[width] duration-300"
                   style={{ width: `${Math.round(ffmpegProgress * 100)}%` }}
                 />
               ) : null}
@@ -445,7 +447,7 @@ const Editor: React.FC = () => {
                   <p>{editorMessage}</p>
                   {editorMessageKind === "ffmpeg-loading" ? (
                     <div className="mt-3">
-                      <div className="h-2 overflow-hidden rounded-full bg-white/75 ring-1 ring-[rgba(255,107,74,0.14)]">
+                      <div className="h-2 overflow-hidden rounded-full bg-white ring-1 ring-[rgba(109,53,255,0.16)]">
                         <div
                           className="h-full rounded-full bg-[var(--tone-accent)] transition-[width] duration-300"
                           style={{ width: `${Math.round(ffmpegProgress * 100)}%` }}
@@ -462,18 +464,18 @@ const Editor: React.FC = () => {
           </div>
         ) : null}
 
-        <div className="mt-5 rounded-[1.8rem] border border-[var(--tone-border-strong)] bg-[var(--tone-surface)] p-4 shadow-[0_18px_36px_-30px_rgba(20,63,69,0.14)]">
-          <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--tone-ink-soft)]">
+        <div className="mt-5 rounded-3xl bg-[var(--tone-paper)] p-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-bold text-[var(--tone-ink-soft)]">
             <Waves className="h-4 w-4" />
             Region selector
           </div>
           <div className="relative">
             <div
               ref={waveformRef}
-              className="min-h-[8.5rem] w-full overflow-hidden rounded-[1.4rem] border border-[var(--tone-border-strong)] bg-[var(--tone-wave-bg)] px-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]"
+              className="min-h-[8.5rem] w-full overflow-hidden rounded-2xl border border-[var(--tone-border)] bg-[var(--tone-wave-bg)] px-2"
             />
             {waveformLoading ? (
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-[1.4rem] bg-[rgba(245,251,251,0.94)]">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 rounded-2xl bg-[rgba(255,255,255,0.9)]">
                 <LoaderCircle className="h-7 w-7 animate-spin text-[var(--tone-accent)]" />
                 <div className="text-center">
                   <p className="text-sm font-semibold text-[var(--tone-ink)]">
@@ -488,8 +490,8 @@ const Editor: React.FC = () => {
           </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-center gap-3 rounded-[1.5rem] border border-[var(--tone-border)] bg-[var(--tone-surface)] px-4 py-4 text-sm text-[var(--tone-ink-soft)] shadow-[0_14px_28px_-26px_rgba(20,63,69,0.18)]">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[rgba(255,107,74,0.22)] bg-[var(--tone-accent-soft)] text-[var(--tone-accent)]">
+        <div className="mt-4 flex items-center justify-center gap-3 rounded-2xl bg-[var(--tone-paper)] px-4 py-4 text-sm text-[var(--tone-ink-soft)]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-[var(--tone-accent)]">
             <Scissors className="h-4 w-4" />
           </div>
           Drag either edge of the highlighted region to choose the exact snippet.
@@ -500,7 +502,7 @@ const Editor: React.FC = () => {
             onClick={handlePlayPause}
             disabled={waveformLoading}
             aria-label={isPlaying ? "Pause audio preview" : "Play audio preview"}
-            className="inline-flex h-16 w-16 items-center justify-center rounded-full border border-[rgba(255,255,255,0.3)] bg-[var(--tone-ink)] text-white shadow-[0_18px_32px_-18px_rgba(15,63,69,0.5)] transition hover:bg-[var(--tone-accent)] disabled:cursor-not-allowed disabled:border-transparent disabled:bg-[var(--tone-muted)]"
+            className="inline-flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-[var(--tone-accent)] text-white shadow-[0_18px_32px_-22px_rgba(109,53,255,0.72)] transition hover:bg-[var(--tone-accent-deep)] active:scale-[0.96] disabled:cursor-not-allowed disabled:bg-[var(--tone-muted)]"
           >
             {isPlaying ? (
               <Pause fill="currentColor" className="h-5 w-5" />
@@ -514,10 +516,10 @@ const Editor: React.FC = () => {
           <button
             onClick={() => handleExport("ios")}
             disabled={waveformLoading || exportingFormat !== null}
-            className="rounded-[1.8rem] border border-[var(--tone-border-strong)] bg-[var(--tone-surface)] p-5 text-left shadow-[0_16px_32px_-28px_rgba(20,63,69,0.16)] transition hover:border-[var(--tone-accent)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="cursor-pointer rounded-3xl bg-[var(--tone-paper)] p-5 text-left transition hover:bg-[var(--tone-accent-soft)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--tone-ink-soft)]">
+              <p className="text-sm font-bold text-[var(--tone-ink-soft)]">
                 iPhone
               </p>
               {exportingFormat === "ios" ? (
@@ -526,7 +528,7 @@ const Editor: React.FC = () => {
                 <Download className="h-5 w-5 text-[var(--tone-accent)]" />
               )}
             </div>
-            <p className="mt-4 text-3xl font-black tracking-[-0.04em] text-[var(--tone-ink)]">
+            <p className="mt-4 text-3xl font-black text-[var(--tone-ink)]">
               .m4r
             </p>
             <p className="mt-2 text-sm leading-6 text-[var(--tone-ink-soft)]">
@@ -537,10 +539,10 @@ const Editor: React.FC = () => {
           <button
             onClick={() => handleExport("android")}
             disabled={waveformLoading || exportingFormat !== null}
-            className="rounded-[1.8rem] border border-[rgba(255,255,255,0.3)] bg-[var(--tone-accent)] p-5 text-left text-white shadow-[0_20px_36px_-24px_rgba(255,107,74,0.48)] transition hover:bg-[var(--tone-accent-deep)] disabled:cursor-not-allowed disabled:border-transparent disabled:opacity-60"
+            className="cursor-pointer rounded-3xl bg-[var(--tone-accent)] p-5 text-left text-white shadow-[0_20px_36px_-28px_rgba(109,53,255,0.78)] transition hover:bg-[var(--tone-accent-deep)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <div className="flex items-center justify-between">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/75">
+              <p className="text-sm font-bold text-white/75">
                 Android
               </p>
               {exportingFormat === "android" ? (
