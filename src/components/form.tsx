@@ -55,8 +55,8 @@ export default function Form() {
   return (
     <div className="mx-auto w-full">
       <form onSubmit={handleForm} className="w-full">
-        <div className="tone-form-shell grid gap-2 p-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-          <label className="flex min-w-0 flex-1 items-center gap-3 rounded-[24px] bg-[var(--tone-paper-strong)] px-5 py-4">
+        <div className="tone-form-shell group grid gap-2 p-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+          <label className="flex min-w-0 flex-1 items-center gap-3 rounded-[24px] bg-[var(--tone-paper-strong)] px-5 py-4 transition-colors group-focus-within:bg-[var(--tone-surface)]">
             <span className="hidden text-sm font-extrabold text-[var(--tone-accent)] sm:inline">
               URL
             </span>

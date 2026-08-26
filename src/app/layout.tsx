@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { StateProvider } from "@/utils/stateContext";
+import { ThemeProvider } from "@/utils/themeContext";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -70,11 +71,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <StateProvider>
-          <SiteHeader />
-          {children}
-          <SiteFooter />
-        </StateProvider>
+        <ThemeProvider>
+          <StateProvider>
+            <SiteHeader />
+            {children}
+            <SiteFooter />
+          </StateProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

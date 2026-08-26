@@ -12,24 +12,12 @@ import {
   Smartphone,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useToneMode } from "@/utils/themeContext";
 import { HashLoader } from "react-spinners";
-
-const toneModes = [
-  { id: "white", label: "White" },
-  { id: "dark", label: "Dark" },
-  { id: "orange", label: "Orange" },
-] as const;
-
-type ToneMode = (typeof toneModes)[number]["id"];
 
 export default function Home() {
   const { data, submitted } = useStateData();
-  const [toneMode, setToneMode] = useState<ToneMode>("white");
-
-  useEffect(() => {
-    document.documentElement.dataset.toneMode = toneMode;
-  }, [toneMode]);
+  const { toneMode } = useToneMode();
 
   const appSchema = {
     "@context": "https://schema.org",
@@ -91,24 +79,6 @@ export default function Home() {
 
         <section className="tone-hero px-0 pb-2 pt-10 text-center sm:pt-16">
           <div className="mx-auto max-w-4xl">
-            <div className="mx-auto mb-7 flex w-fit rounded-full bg-[var(--tone-paper)] p-1">
-              {toneModes.map((mode) => (
-                <button
-                  key={mode.id}
-                  type="button"
-                  aria-pressed={toneMode === mode.id}
-                  onClick={() => setToneMode(mode.id)}
-                  className={`h-10 rounded-full px-5 text-sm font-extrabold transition ${
-                    toneMode === mode.id
-                      ? "bg-[var(--tone-accent)] text-white shadow-[0_12px_28px_-20px_var(--tone-shadow)]"
-                      : "text-[var(--tone-ink-soft)] hover:text-[var(--tone-ink)]"
-                  }`}
-                >
-                  {mode.label}
-                </button>
-              ))}
-            </div>
-
             <h1 className="text-5xl font-black leading-[0.98] text-[var(--tone-ink)] sm:text-7xl lg:text-8xl">
               TikTok Ringtone Maker
             </h1>

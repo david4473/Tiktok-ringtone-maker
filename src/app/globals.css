@@ -1,16 +1,17 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: #fbfaf7;
   --foreground: #1c1430;
-  --tone-bg: #ffffff;
-  --tone-paper: #f7f4ff;
+  --tone-bg: #fbfaf7;
+  --tone-paper: #f0ebff;
   --tone-paper-strong: #ffffff;
   --tone-surface: #ffffff;
   --tone-wave-bg: linear-gradient(180deg, #fbfaff 0%, #f1edff 100%);
   --tone-wave: #d8cff9;
   --tone-wave-progress: #6d35ff;
   --tone-wave-cursor: #1c1430;
+  --tone-region: rgba(109, 53, 255, 0.34);
   --tone-ink: #1c1430;
   --tone-ink-soft: #655b78;
   --tone-muted: #9a8fb2;
@@ -40,6 +41,7 @@ html[data-tone-mode="dark"] {
   --tone-wave: #433a5c;
   --tone-wave-progress: #b597ff;
   --tone-wave-cursor: #f8f7ff;
+  --tone-region: rgba(181, 151, 255, 0.36);
   --tone-ink: #f8f7ff;
   --tone-ink-soft: #c7c0d8;
   --tone-muted: #877d9e;
@@ -67,6 +69,7 @@ html[data-tone-mode="orange"] {
   --tone-wave: #fed7aa;
   --tone-wave-progress: #f97316;
   --tone-wave-cursor: #291504;
+  --tone-region: rgba(249, 115, 22, 0.32);
   --tone-ink: #291504;
   --tone-ink-soft: #7a4a21;
   --tone-muted: #a87545;

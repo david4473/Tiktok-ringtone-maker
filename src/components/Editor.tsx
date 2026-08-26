@@ -156,7 +156,7 @@ const Editor: React.FC = () => {
         wsRegions.addRegion({
           start: 0,
           end: Math.min(30, decodedDuration),
-          color: rootStyles.getPropertyValue("--tone-accent-soft").trim(),
+          color: rootStyles.getPropertyValue("--tone-region").trim(),
           drag: true,
           resize: true,
         });
